@@ -36,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic topic pages - highest priority
   const topicPages: MetadataRoute.Sitemap = topics.map((topic) => ({
     url: `${baseUrl}/${topic.slug}`,
-    lastModified: topic.last_crawled_at ? new Date(topic.last_crawled_at) : new Date(),
+    lastModified: topic.last_updated ? new Date(topic.last_updated) : new Date(),
     changeFrequency: 'daily' as const,
     priority: 1.0,
   }));
