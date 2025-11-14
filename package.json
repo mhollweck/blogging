@@ -1,0 +1,22 @@
+{
+  "name": "blogging-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BLOGG.ING MVP - Topic-based blog aggregation platform",
+  "workspaces": [
+    "frontend",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces"
+  },
+  "keywords": [
+    "blog",
+    "aggregation",
+    "serp",
+    "ai-summary"
+  ],
+  "license": "MIT"
+}
