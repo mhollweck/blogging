@@ -1,0 +1,145 @@
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-alt) 100%);
+  border-bottom: 1px solid var(--color-border);
+  padding: 3rem 0 2rem;
+}
+
+.heroContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.heroSubtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+  max-width: 800px;
+}
+
+.heroMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  flex-wrap: wrap;
+}
+
+.updateBadge {
+  background: var(--color-accent);
+  color: var(--color-bg-card);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.heroStats {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;
+}
+
+.contentWrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Section */
+.section {
+  margin-bottom: 3rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.sectionSubtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* Results Grid */
+.resultsGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-muted);
+}
+
+/* FAQ Section */
+.faqSection {
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.faqList {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.faqItem {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.faqQuestion {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
+
+.faqAnswer {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+
+  .container {
+    padding: 2rem 1rem 3rem;
+  }
+}

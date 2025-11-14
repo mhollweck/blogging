@@ -1,0 +1,64 @@
+/* Global styles matching the HTML design */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Colors from design */
+  --color-bg: #FAF9F6;
+  --color-bg-card: #FFFFFF;
+  --color-bg-alt: #F5F3EE;
+  --color-text: #2C2416;
+  --color-text-muted: #6B5F4E;
+  --color-text-light: #C7BFB0;
+  --color-accent: #C17D3A;
+  --color-border: #E8E5DC;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Utility classes */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.container-narrow {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container,
+  .container-narrow {
+    padding: 0 1rem;
+  }
+}

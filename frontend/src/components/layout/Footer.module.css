@@ -1,0 +1,41 @@
+.footer {
+  background: var(--color-text);
+  color: var(--color-text-light);
+  padding: 2rem 0;
+  margin-top: 4rem;
+}
+
+.content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.note {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.note strong {
+  color: var(--color-bg-card);
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.links a {
+  color: var(--color-text-light);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.links a:hover {
+  color: var(--color-accent);
+}
