@@ -54,8 +54,8 @@ export function InfiniteArticleList({
   return (
     <>
       <div className={styles.resultsGrid}>
-        {visibleArticles.map((article) => (
-          <ArticleCard key={article.id} article={article} />
+        {visibleArticles.map((article, index) => (
+          <ArticleCard key={article.id} article={article} displayNumber={index + 1} />
         ))}
       </div>
 

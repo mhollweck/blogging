@@ -91,7 +91,10 @@ async function crawlKeyword(keyword: Keyword, env: Env, supabase: any) {
     },
     body: JSON.stringify({
       q: keyword.search_query,
-      num: 20, // Get top 20 results
+      num: 100, // Get top 100 results (same cost as 20)
+      gl: 'us', // US-based results (closer to Google web)
+      hl: 'en', // English language
+      autocorrect: true, // Auto-correct typos
     }),
   });
 
@@ -104,16 +107,31 @@ async function crawlKeyword(keyword: Keyword, env: Env, supabase: any) {
 
   console.log(`  Found ${results.length} results`);
 
-  // Filter out non-blog sites (social media, forums, health authorities, etc.)
+  // Debug logging for problem topics
+  if (results.length === 0 || ['legitimate-work-from-home-jobs', 'best-side-hustle-ideas-2025', 'best-credit-cards-2025'].includes(keyword.slug)) {
+    console.log(`  DEBUG [${keyword.slug}]:`, {
+      query: keyword.search_query,
+      totalOrganic: data.organic?.length || 0,
+      hasKnowledgeGraph: !!data.knowledgeGraph,
+      hasAnswerBox: !!data.answerBox,
+      firstThreeDomains: results.slice(0, 3).map(r => {
+        try { return extractDomain(r.link); } catch { return 'parse-error'; }
+      })
+    });
+  }
+
+  // Filter out blocked domains (social media, forums, etc.) but accept all other sites
   const filteredResults = results.filter(result => {
     const domain = extractDomain(result.link);
-    if (isBlockedDomain(domain)) return false;
-
-    // Apply blog detection - only keep sources that look like blogs
-    return isBlogSource(result.link, domain);
+    // Only filter by domain blocklist - don't require blog signals
+    return !isBlockedDomain(domain);
   });
 
-  console.log(`  After filtering: ${filteredResults.length} blog results`);
+  console.log(`  After filtering: ${filteredResults.length} results (blocked domains removed)`);
+
+  // Keep only top 10 best results
+  const topResults = filteredResults.slice(0, 10);
+  console.log(`  Using top ${topResults.length} results`);
 
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
@@ -141,8 +159,8 @@ async function crawlKeyword(keyword: Keyword, env: Env, supabase: any) {
   }
 
   // 3. Process each result
-  for (let i = 0; i < filteredResults.length; i++) {
-    const result = filteredResults[i];
+  for (let i = 0; i < topResults.length; i++) {
+    const result = topResults[i];
 
     try {
       // Normalize URL

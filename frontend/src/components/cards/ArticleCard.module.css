@@ -65,6 +65,23 @@
   margin-bottom: 1rem;
 }
 
+.bulletList {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.bulletList li {
+  margin-bottom: 0.5rem;
+}
+
+.bulletList li:last-child {
+  margin-bottom: 0;
+}
+
 .footer {
   display: flex;
   justify-content: space-between;
