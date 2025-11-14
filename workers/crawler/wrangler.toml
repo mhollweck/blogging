@@ -1,0 +1,12 @@
+name = "blogging-crawler"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Cron trigger - runs daily at 3:00 AM UTC
+[triggers]
+crons = ["0 3 * * *"]
+
+# Environment variables (secrets set via CLI)
+# SUPABASE_URL
+# SUPABASE_SERVICE_KEY
+# SERPER_API_KEY

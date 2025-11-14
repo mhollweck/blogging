@@ -19,7 +19,7 @@ export class SupabaseDatabaseService implements DatabaseService {
   async getAllTopics(): Promise<HomePageTopic[]> {
     const { data: keywords, error } = await this.client
       .from('keywords')
-      .select('slug, display_title, description, last_crawled_at')
+      .select('id, slug, display_title, description, last_crawled_at')
       .eq('active', true)
       .order('display_title', { ascending: true });
 
@@ -31,7 +31,7 @@ export class SupabaseDatabaseService implements DatabaseService {
         const { count } = await this.client
           .from('keyword_results')
           .select('*', { count: 'exact', head: true })
-          .eq('keyword_id', keyword.slug);
+          .eq('keyword_id', keyword.id);
 
         return {
           slug: keyword.slug,
