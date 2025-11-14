@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description:
     'Daily-curated collections of the best articles on any topic. Updated every morning from expert blogs across the web.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://blogg.ing'),
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
