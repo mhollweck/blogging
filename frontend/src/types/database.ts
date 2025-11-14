@@ -53,12 +53,4 @@ export interface HomePageTopic {
   description: string;
   article_count: number;
   last_updated: string | null;
-  category?: string;
-}
-
-// Category grouping for homepage
-export interface TopicCategory {
-  name: string;
-  subtitle: string;
-  topics: HomePageTopic[];
 }

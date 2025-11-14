@@ -5,13 +5,10 @@ import {
   Keyword,
   TopicPageData,
   HomePageTopic,
-  TopicCategory,
 } from '@/types/database';
 import {
   MOCK_KEYWORDS,
   MOCK_ARTICLES,
-  TOPIC_CATEGORIES,
-  CATEGORY_MAPPING,
 } from '@/data/mock-topics';
 
 export class MockDatabaseService implements DatabaseService {
@@ -25,20 +22,7 @@ export class MockDatabaseService implements DatabaseService {
       description: keyword.description,
       article_count: MOCK_ARTICLES[keyword.slug]?.length || 38,
       last_updated: keyword.last_crawled_at,
-      category: CATEGORY_MAPPING[keyword.slug],
     }));
-  }
-
-  async getTopicsByCategory(): Promise<TopicCategory[]> {
-    await this.delay(100);
-
-    const allTopics = await this.getAllTopics();
-
-    return TOPIC_CATEGORIES.map((category) => ({
-      name: category.name,
-      subtitle: category.subtitle,
-      topics: allTopics.filter((topic) => topic.category === category.name),
-    })).filter((category) => category.topics.length > 0);
   }
 
   async getTopicBySlug(slug: string): Promise<Keyword | null> {

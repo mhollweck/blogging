@@ -1,9 +1,14 @@
 // Header component matching the HTML design
 
 import Link from 'next/link';
+import { db } from '@/lib/db';
+import { SearchBar } from './SearchBar';
 import styles from './Header.module.css';
 
-export function Header() {
+export async function Header() {
+  // Fetch topics for search
+  const topics = await db.getAllTopics();
+
   return (
     <header className={styles.header}>
       <div className={styles.container}>
@@ -11,11 +16,7 @@ export function Header() {
           BLOGG<span className={styles.logoDot}>.</span>ING
         </Link>
         <div className={styles.searchBar}>
-          <input
-            type="text"
-            placeholder="Search topics, keywords, or questions..."
-            aria-label="Search"
-          />
+          <SearchBar topics={topics} />
         </div>
       </div>
     </header>

@@ -7,7 +7,7 @@ import styles from './page.module.css';
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function HomePage() {
-  const categories = await db.getTopicsByCategory();
+  const topics = await db.getAllTopics();
 
   return (
     <>
@@ -27,18 +27,11 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className={styles.container}>
-        {categories.map((category) => (
-          <section key={category.name} className={styles.section}>
-            <h2 className={styles.sectionTitle}>{category.name}</h2>
-            <p className={styles.sectionSubtitle}>{category.subtitle}</p>
-
-            <div className={styles.grid}>
-              {category.topics.map((topic) => (
-                <TopicCard key={topic.slug} topic={topic} />
-              ))}
-            </div>
-          </section>
-        ))}
+        <div className={styles.grid}>
+          {topics.map((topic) => (
+            <TopicCard key={topic.slug} topic={topic} />
+          ))}
+        </div>
       </div>
     </>
   );

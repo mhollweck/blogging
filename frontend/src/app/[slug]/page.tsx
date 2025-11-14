@@ -77,10 +77,6 @@ export default async function TopicPage({ params }: TopicPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: seoData.schema_webpage }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: seoData.schema_faq }}
-      />
 
       {/* Hero Section */}
       <section className={styles.hero}>
@@ -122,20 +118,6 @@ export default async function TopicPage({ params }: TopicPageProps) {
             )}
           </div>
 
-          {/* FAQ Section */}
-          {seoData.seo_faq.length > 0 && (
-            <div className={styles.faqSection}>
-              <h2 className={styles.sectionTitle}>Frequently Asked Questions</h2>
-              <div className={styles.faqList}>
-                {seoData.seo_faq.map((faq, index) => (
-                  <div key={index} className={styles.faqItem}>
-                    <h3 className={styles.faqQuestion}>{faq.q}</h3>
-                    <p className={styles.faqAnswer}>{faq.a}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </>

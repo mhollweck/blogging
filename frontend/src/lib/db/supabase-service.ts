@@ -6,7 +6,6 @@ import {
   Keyword,
   TopicPageData,
   HomePageTopic,
-  TopicCategory,
   ArticleWithSource,
 } from '@/types/database';
 
@@ -45,20 +44,6 @@ export class SupabaseDatabaseService implements DatabaseService {
     );
 
     return topicsWithCounts;
-  }
-
-  async getTopicsByCategory(): Promise<TopicCategory[]> {
-    // For now, return all topics in a single "All Topics" category
-    // In the future, you could add a `category` column to keywords table
-    const topics = await this.getAllTopics();
-
-    return [
-      {
-        name: 'All Topics',
-        subtitle: 'Curated collections updated daily',
-        topics,
-      },
-    ];
   }
 
   async getTopicBySlug(slug: string): Promise<Keyword | null> {

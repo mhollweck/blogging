@@ -18,9 +18,8 @@ export function Footer() {
         </div>
         <div className={styles.links}>
           <Link href="/about">About BLOGG.ING</Link>
-          <Link href="/how-it-works">How It Works</Link>
           <Link href="/privacy">Privacy</Link>
-          <Link href="/sitemap">Sitemap</Link>
+          <Link href="/sitemap.xml">Sitemap</Link>
         </div>
       </div>
     </footer>

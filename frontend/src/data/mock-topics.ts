@@ -207,19 +207,3 @@ export const MOCK_ARTICLES: Record<string, ArticleWithSource[]> = {
   ],
 };
 
-// Categories for homepage grouping
-export const TOPIC_CATEGORIES = [
-  { name: 'Travel', subtitle: 'Destinations, tips, and travel guides curated from expert travel bloggers' },
-  { name: 'Productivity', subtitle: 'Systems, habits, and strategies from productivity experts' },
-  { name: 'Tech & AI', subtitle: 'Engineering, AI development, and technical deep dives' },
-  { name: 'Business', subtitle: 'Building products, growing businesses, and maker stories' },
-  { name: 'Health & Wellness', subtitle: 'Fitness, mental health, and personal development' },
-];
-
-export const CATEGORY_MAPPING: Record<string, string> = {
-  'best-budget-travel-destinations-2025': 'Travel',
-  'remote-work-productivity-tips': 'Productivity',
-  'ai-tools-productivity': 'Tech & AI',
-  'digital-marketing-strategies': 'Business',
-  'web-development-tutorials': 'Tech & AI',
-};
