@@ -16,6 +16,9 @@ export interface DatabaseService {
   // Get complete topic page data (keyword + latest articles)
   getTopicPageData(slug: string): Promise<TopicPageData | null>;
 
+  // Check if slug is a variant and return canonical slug
+  getCanonicalSlug(variantSlug: string): Promise<string | null>;
+
   // Check if database is available
   healthCheck(): Promise<boolean>;
 }

@@ -1,10 +1,10 @@
 // Dynamic topic page
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { db } from '@/lib/db';
 import { seoGenerator } from '@/lib/seo';
-import { ArticleCard } from '@/components/cards/ArticleCard';
+import { InfiniteArticleList } from '@/components/articles/InfiniteArticleList';
 import styles from './page.module.css';
 
 export const revalidate = 3600; // Revalidate every hour
@@ -34,18 +34,48 @@ export async function generateMetadata({
     search_query: data.keyword.search_query,
   });
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://blogg.ing';
+  const canonicalUrl = `${baseUrl}/${data.keyword.slug}`;
+
   return {
     title: seoData.title_tag,
     description: seoData.meta_description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: seoData.title_tag,
       description: seoData.meta_description,
       type: 'website',
+      url: canonicalUrl,
+      siteName: 'BLOGG.ING',
+      locale: 'en_US',
+      images: [
+        {
+          url: `${baseUrl}/og/${data.keyword.slug}.png`,
+          width: 1200,
+          height: 630,
+          alt: data.keyword.display_title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoData.title_tag,
+      description: seoData.meta_description,
+      images: [`${baseUrl}/og/${data.keyword.slug}.png`],
     },
   };
 }
 
 export default async function TopicPage({ params }: TopicPageProps) {
+  // Check if this slug is a variant and redirect to canonical
+  const canonicalSlug = await db.getCanonicalSlug(params.slug);
+  if (canonicalSlug) {
+    redirect(`/${canonicalSlug}`);
+  }
+
+  // Load topic data with canonical slug
   const data = await db.getTopicPageData(params.slug);
 
   if (!data) {
@@ -72,10 +102,16 @@ export default async function TopicPage({ params }: TopicPageProps) {
 
   return (
     <>
-      {/* JSON-LD Schema */}
+      {/* JSON-LD Schema - WebPage */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: seoData.schema_webpage }}
+      />
+
+      {/* JSON-LD Schema - FAQ */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: seoData.schema_faq }}
       />
 
       {/* Hero Section */}
@@ -110,11 +146,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
                 <p>No articles available yet. Check back soon!</p>
               </div>
             ) : (
-              <div className={styles.resultsGrid}>
-                {articles.map((article) => (
-                  <ArticleCard key={article.id} article={article} />
-                ))}
-              </div>
+              <InfiniteArticleList initialArticles={articles} pageSize={5} />
             )}
           </div>
 

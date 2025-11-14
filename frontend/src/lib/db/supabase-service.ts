@@ -139,6 +139,26 @@ export class SupabaseDatabaseService implements DatabaseService {
     };
   }
 
+  async getCanonicalSlug(variantSlug: string): Promise<string | null> {
+    // Check if this slug is a variant
+    const { data, error } = await this.client
+      .from('slug_variants')
+      .select('keyword_id')
+      .eq('variant_slug', variantSlug)
+      .single();
+
+    if (error || !data) return null;
+
+    // Get the canonical slug from the keyword
+    const { data: keyword } = await this.client
+      .from('keywords')
+      .select('slug')
+      .eq('id', data.keyword_id)
+      .single();
+
+    return keyword?.slug || null;
+  }
+
   async healthCheck(): Promise<boolean> {
     try {
       const { error } = await this.client.from('keywords').select('id').limit(1);

@@ -1,0 +1,183 @@
+================================================================================
+                         VISUAL SUMMARY - AT A GLANCE
+================================================================================
+
+WHAT DATA DO WE HAVE?
+================================================================================
+
+Database - sources table (exists):
+  [ id ][ url ][ domain ][ first_seen_at ] <-- BEST current proxy
+                                 |
+                              "When we discovered it"
+                           (not actual publish date)
+
+Serper API Response:
+  { title, link, snippet, position }
+         X X X X
+      No date field in organic results!
+  
+================================================================================
+
+WHAT GETS DISPLAYED NOW vs. LATER
+================================================================================
+
+NOW (Frontend only, no DB changes):          LATER (Full implementation):
+┌─────────────────────────────────┐         ┌──────────────────────────────────┐
+│ 1 nomadicmatt.com               │         │ 1 nomadicmatt.com  Jan 15, 2025  │
+│   The 15 Best Budget...         │         │   The 15 Best Budget...          │
+│   From Southeast Asia's...      │         │   From Southeast Asia's...       │
+│   nomadicmatt.com [Open]        │         │   nomadicmatt.com      [Open]    │
+└─────────────────────────────────┘         └──────────────────────────────────┘
+       (date not shown yet)                     (date fetched from database
+                                                or Serper API)
+
+================================================================================
+
+DATA FLOW COMPARISON
+================================================================================
+
+CURRENT FLOW:
+  
+  Serper API ──> Crawler ──> Database ──> Frontend
+  (title,link)    (stores)   (sources)     (ArticleCard)
+                             no date
+                                          ❌ No date display
+
+PHASE 1 FLOW (Quick):
+  
+  Database ──> Supabase Query ──> Frontend
+  (first_seen_at)   (fetches)    (ArticleCard)
+                                  displays "Jan 15"
+                                  (= when we found it)
+
+PHASE 2 FLOW (Full):
+  
+  Serper API ──> Crawler ──> Database ──> Supabase Query ──> Frontend
+  (parse date)   (if exists) (published_at)  (fetches)    (displays)
+                                                           "Published
+                                                            Jan 15, 2025"
+
+================================================================================
+
+FILES TO CHANGE - QUICK REFERENCE
+================================================================================
+
+TO CREATE:
+  /frontend/src/lib/date-formatter.ts
+    └─ formatPublishDate() function
+       "2 days ago" / "Dec 15, 2024"
+
+TO MODIFY:
+  /frontend/src/components/cards/ArticleCard.tsx
+    └─ Add date display in header
+    
+  /frontend/src/components/cards/ArticleCard.module.css
+    └─ Add .date style class
+    
+  /frontend/src/types/database.ts
+    └─ Add published_at?, publish_date_raw? to Source interface
+    
+  /frontend/src/lib/db/supabase-service.ts
+    └─ Add published_at, publish_date_raw to .select()
+
+================================================================================
+
+IMPLEMENTATION TIMELINE
+================================================================================
+
+QUICK (2-3 hours) - Phase 1:
+  30 min: Create date-formatter.ts
+  30 min: Update ArticleCard component
+  30 min: Update types/queries
+  1 hour: Testing and refinement
+  ✓ Users see dates (using first_seen_at as proxy)
+
+FULL (4-6 hours) - Phase 2:
+  30 min: Database migration
+  1.5 hr: Update crawler
+  1.5 hr: Testing
+  1-2 hr: HTML parsing (if needed)
+  ✓ Users see actual article publish dates
+
+================================================================================
+
+WHAT YOU'LL SEE ON THE FRONTEND
+================================================================================
+
+Example Article Card (with dates):
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ 1 nomadicmatt.com              2 days ago               │  <-- NEW!
+  │                                                           │
+  │ The 15 Best Budget Travel Destinations for 2025         │
+  │                                                           │
+  │ From Southeast Asia's hidden gems to Europe's most      │
+  │ affordable cities, here's where to travel this year     │
+  │ without breaking the bank...                            │
+  │                                                           │
+  │ nomadicmatt.com                  [Open original →]       │
+  └─────────────────────────────────────────────────────────┘
+
+Date Display Examples:
+  "Today"
+  "Yesterday"
+  "2 days ago"
+  "1 week ago"
+  "Dec 15, 2024"
+
+================================================================================
+
+CRITICAL FINDINGS
+================================================================================
+
+1. SERPER API LIMITATION
+   ❌ Does NOT provide publish dates in organic search results
+   ✓ DOES provide dates in news results (if switching API)
+   → Need to either parse HTML or switch API endpoint
+
+2. DATABASE READY
+   ✓ Already has first_seen_at (good proxy)
+   ✓ Can add published_at field later without breaking existing data
+   ✓ No urgent changes needed
+
+3. FRONTEND READY
+   ✓ ArticleCard component already structured for additional metadata
+   ✓ Can add date display with minimal changes
+   ✓ CSS flexbox layout accommodates new element
+
+4. NO BLOCKING ISSUES
+   ✓ Can implement Phase 1 (frontend only) immediately
+   ✓ Phase 2 (full implementation) can wait for better date source
+
+================================================================================
+
+QUICK DECISION MATRIX
+================================================================================
+
+Want dates ASAP?
+  → Go with Phase 1 (2-3 hours)
+  → Users see "Jan 15" but it means "we found it on Jan 15"
+  → Can upgrade later to actual publish dates
+
+Want accurate dates?
+  → Need Phase 2 (4-6 hours)
+  → Must parse HTML from articles OR switch to News API
+  → Better long-term solution
+
+Want maximum accuracy?
+  → Combine Phase 1 + Phase 2
+  → Show dates from Serper if available, else fetch from article HTML
+  → Most work but best user experience
+
+================================================================================
+
+KEY QUESTION TO ANSWER
+================================================================================
+
+"Do users prefer seeing ANY date (quick) vs. ACCURATE dates (slower)?"
+
+If accuracy matters: Implement Phase 2
+If speed matters:    Implement Phase 1
+If you're unsure:    Start with Phase 1, upgrade to Phase 2 later
+
+================================================================================

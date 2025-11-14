@@ -1,0 +1,17 @@
+{
+  "name": "rss-detector",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker to detect RSS feeds for blog sources",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "wrangler": "^3.22.1"
+  }
+}

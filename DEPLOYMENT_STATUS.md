@@ -24,21 +24,42 @@
 - ✅ Dependencies installed
 - ✅ Secrets configured for both workers
 
-## ⏳ In Progress
+## ✅ DEPLOYED!
 
-### Cloudflare Workers Deployment
-**Status:** Waiting for Cloudflare OAuth authentication
+### Cloudflare Workers - Live
+**Status:** 🚀 Both workers successfully deployed and scheduled
 
-**What's happening:**
-- `wrangler login` command is running
-- Browser should be open with Cloudflare OAuth page
-- Need to complete authentication in browser
+**Deployed URLs:**
+- **Crawler:** https://blogging-crawler.maria-105.workers.dev
+  - Cron: Daily at 3:00 AM UTC
+  - Version: f87850be-1864-49ed-bc1d-2760f0a21b1e
 
-**Once authenticated, I will:**
-1. Register workers.dev subdomain
-2. Deploy both workers to Cloudflare
-3. Test manual execution of both workers
-4. Verify cron schedules are active
+- **Summarizer:** https://blogging-summarizer.maria-105.workers.dev
+  - Cron: Daily at 4:00 AM UTC
+  - Version: e79c1514-e19c-4901-b78c-cb11c0117ee3
+
+**What's live:**
+- ✅ Both workers deployed to Cloudflare
+- ✅ Cron schedules active (crawler at 3am, summarizer at 4am UTC)
+- ✅ All secrets configured and working
+- ✅ Workers ready to be triggered
+
+**Next steps (when you're ready to populate data):**
+
+**Option 1: Manual trigger now**
+```bash
+# Crawl all 10 topics and save articles
+curl https://blogging-crawler.maria-105.workers.dev
+
+# Generate AI summaries for articles
+curl https://blogging-summarizer.maria-105.workers.dev
+```
+
+**Option 2: Wait for automatic cron**
+- First crawl: Tomorrow at 3:00 AM UTC
+- First summarization: Tomorrow at 4:00 AM UTC
+
+**Note:** Per your request, workers are deployed but have NOT been triggered yet. No data will be crawled/summarized until you manually trigger or wait for first cron run.
 
 ---
 

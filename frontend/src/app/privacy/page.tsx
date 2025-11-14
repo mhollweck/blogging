@@ -33,8 +33,8 @@ export default function PrivacyPage() {
 
           <h3>Analytics Data</h3>
           <p>
-            We may collect anonymous usage data to understand how visitors use our site,
-            including:
+            We use Plausible Analytics, a privacy-friendly analytics service, to understand
+            how visitors use our site. Plausible collects anonymous usage data including:
           </p>
           <ul>
             <li>Pages visited</li>
@@ -42,16 +42,22 @@ export default function PrivacyPage() {
             <li>Browser type and version</li>
             <li>Device type</li>
             <li>General geographic location (country/city level)</li>
+            <li>Outbound link clicks (when you click to read an article)</li>
           </ul>
-          <p>This data is aggregated and anonymous. We do not track individual users.</p>
+          <p>
+            This data is aggregated and anonymous. Plausible does not use cookies, does not
+            track individual users across sessions, and is fully GDPR compliant. Learn more at{' '}
+            <a href="https://plausible.io/privacy-focused-web-analytics" target="_blank" rel="noopener noreferrer">
+              plausible.io/privacy-focused-web-analytics
+            </a>
+          </p>
         </section>
 
         <section>
           <h2>Cookies</h2>
           <p>
-            We may use cookies for basic site functionality and analytics. You can
-            disable cookies in your browser settings, though some features may not work
-            properly.
+            BLOGG.ING does not use cookies. Our analytics solution (Plausible) is
+            cookie-free and does not store any data in your browser.
           </p>
         </section>
 
@@ -91,8 +97,8 @@ export default function PrivacyPage() {
         <section>
           <h2>Contact</h2>
           <p>
-            If you have questions about this privacy policy, please contact us at
-            privacy@blogg.ing
+            If you have questions about this privacy policy, please contact us at{' '}
+            <a href="mailto:maria@asobi-labs.com">maria@asobi-labs.com</a>
           </p>
         </section>
       </div>

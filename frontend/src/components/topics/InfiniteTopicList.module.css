@@ -1,0 +1,60 @@
+.topicGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .topicGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.loadMore {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 0;
+  min-height: 100px;
+}
+
+.spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.spinnerIcon {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadPrompt {
+  color: #999;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.endMessage {
+  text-align: center;
+  color: #999;
+  font-size: 0.9rem;
+  padding: 2rem 0;
+  margin-top: 2rem;
+  border-top: 1px solid #eee;
+}

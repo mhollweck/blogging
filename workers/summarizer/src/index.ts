@@ -121,15 +121,17 @@ async function summarizeSource(source: Source, env: Env, supabase: any) {
 function buildPrompt(title: string, snippet: string): string {
   const context = snippet ? `${title}\n\n${snippet}` : title;
 
-  return `You are helping users quickly decide which blog posts to read.
-Summarize the following article in 1-2 sentences, max 60 words.
-Focus on what the reader will learn or get from the article.
-Do not be clickbaity. No emojis.
+  return `You are helping users quickly scan articles to decide what to read.
+Create a 2-3 bullet point summary (max 50 words total).
+Each bullet should be a concise, direct statement about what the article covers.
+Start bullets with action verbs or direct facts - avoid starting with "This article" or "The article".
+Use markdown format with dashes for bullets (- Point one\n- Point two).
+No emojis or clickbait language.
 
 Title: ${title}
 Description: ${snippet || 'No description available'}
 
-Summary:`;
+Summary (bullet points):`;
 }
 
 async function generateSummary(prompt: string, env: Env): Promise<string | null> {

@@ -49,6 +49,12 @@ export class MockDatabaseService implements DatabaseService {
     };
   }
 
+  async getCanonicalSlug(variantSlug: string): Promise<string | null> {
+    await this.delay(50);
+    // Mock implementation - no variants in mock data
+    return null;
+  }
+
   async healthCheck(): Promise<boolean> {
     return true;
   }

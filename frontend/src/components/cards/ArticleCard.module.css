@@ -75,6 +75,18 @@
 .meta {
   font-size: 0.8rem;
   color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.publishDate {
+  color: var(--color-text-muted);
+}
+
+.separator {
+  color: var(--color-text-muted);
+  opacity: 0.5;
 }
 
 .openBtn {

@@ -1,0 +1,308 @@
+================================================================================
+                    PUBLISH DATE FEATURE - INVESTIGATION FINDINGS
+================================================================================
+
+INVESTIGATION COMPLETED: November 14, 2025
+
+================================================================================
+1. SERPER API DATA AVAILABILITY
+================================================================================
+
+KEY FINDING: Serper API does NOT reliably provide publish dates in organic 
+            search results. Date field is available only in News results.
+
+Current Serper API Response (Organic Results):
+  - title: Article heading
+  - link: URL
+  - snippet: Preview text
+  - position: Ranking position
+  X date: NOT available (or unreliable)
+
+Where Date IS Available:
+  - News API results: Includes "date" field (e.g., "2 weeks ago")
+  - Individual article HTML: Must be scraped for metadata
+
+Files Reviewed:
+  - /Users/mariahollweck/Projects/blogging/workers/crawler/src/index.ts
+    Lines 18-23: SerperResult interface (missing date field)
+
+================================================================================
+2. DATABASE SCHEMA ANALYSIS
+================================================================================
+
+CURRENT STRUCTURE - sources table:
+  - id: UUID (primary key)
+  - url: TEXT UNIQUE
+  - domain: TEXT
+  - first_seen_at: TIMESTAMPTZ  <-- Currently BEST proxy for publish date
+  - last_seen_at: TIMESTAMPTZ
+  - summary_short: TEXT
+  - created_at: TIMESTAMPTZ
+  - updated_at: TIMESTAMPTZ
+
+CURRENT STRUCTURE - keyword_results table:
+  - id, keyword_id, source_id, title, snippet, position
+  - crawled_at: DATE (when WE crawled it, not article publish date)
+  - created_at: TIMESTAMPTZ
+
+RECOMMENDED SCHEMA CHANGES:
+  Option 1 (RECOMMENDED): Add to sources table
+    - ALTER TABLE sources ADD COLUMN published_at TIMESTAMPTZ;
+    - ALTER TABLE sources ADD COLUMN publish_date_raw TEXT;
+    
+  Why sources table is better:
+    - Publication date belongs to the article/URL
+    - Avoids duplication across multiple keyword searches
+    - Cleaner data model
+    - first_seen_at can serve as initial/fallback value
+
+File Location:
+  /Users/mariahollweck/Projects/blogging/database/schema.sql
+
+================================================================================
+3. CRAWLER MODIFICATIONS REQUIRED
+================================================================================
+
+File: /Users/mariahollweck/Projects/blogging/workers/crawler/src/index.ts
+
+CURRENT SerperResult INTERFACE (lines 18-23):
+  interface SerperResult {
+    title: string;
+    link: string;
+    snippet?: string;
+    position: number;
+  }
+
+REQUIRED CHANGES:
+
+1. Update Interface:
+   interface SerperResult {
+     title: string;
+     link: string;
+     snippet?: string;
+     position: number;
+     date?: string;  // ADD THIS
+   }
+
+2. Create parsePublishDate() function (NEW):
+   - Handle relative dates: "2 days ago", "1 week ago"
+   - Handle absolute dates: "Jan 15, 2024"
+   - Return ISO timestamp or null
+   - Gracefully handle missing dates
+
+3. Update source upsert (lines 154-169):
+   Current: Only upserts url, domain, last_seen_at
+   Needed: Also upsert published_at, publish_date_raw
+
+4. Challenge:
+   - Serper organic API doesn't provide reliable dates
+   - May need to switch to News API or implement HTML scraping
+   - Can use first_seen_at as temporary fallback
+
+Files Affected:
+  - workers/crawler/src/index.ts (upsert logic around line 155)
+
+================================================================================
+4. FRONTEND COMPONENT CHANGES
+================================================================================
+
+File: /Users/mariahollweck/Projects/blogging/frontend/src/components/cards/ArticleCard.tsx
+
+CURRENT COMPONENT (lines 10-37):
+  - Displays: position badge, domain, title, snippet
+  - Missing: publish date display
+  - Has footer with domain and "Open original" button
+
+REQUIRED CHANGES:
+
+A. Create NEW utility file: frontend/src/lib/date-formatter.ts
+   
+   export function formatPublishDate(dateStr?: string | null): string | null {
+     if (!dateStr) return null;
+     
+     const date = new Date(dateStr);
+     const diffDays = Math.floor((Date.now() - date.getTime()) / 86400000);
+     
+     if (diffDays === 0) return 'Today';
+     if (diffDays === 1) return 'Yesterday';
+     if (diffDays < 7) return `${diffDays} days ago`;
+     if (diffDays < 30) return `${Math.floor(diffDays/7)} weeks ago`;
+     
+     return date.toLocaleDateString('en-US', {
+       year: 'numeric',
+       month: 'short',
+       day: 'numeric'
+     });
+   }
+
+B. Update ArticleCard component (lines 10-37):
+   - Import formatPublishDate utility
+   - Extract publishDate from article.source.published_at
+   - Display in header next to domain
+   - Show conditionally if date exists
+
+C. Update ArticleCard.module.css:
+   Add new .date style class:
+   .date {
+     font-size: 0.8rem;
+     color: var(--color-text-muted);
+     margin-left: auto;
+     white-space: nowrap;
+   }
+
+Display Format Examples:
+  - "Today"
+  - "Yesterday"  
+  - "2 days ago"
+  - "1 week ago"
+  - "Dec 15, 2024" (for older dates)
+
+Files to Modify:
+  - /Users/mariahollweck/Projects/blogging/frontend/src/components/cards/ArticleCard.tsx
+  - /Users/mariahollweck/Projects/blogging/frontend/src/components/cards/ArticleCard.module.css
+  - /Users/mariahollweck/Projects/blogging/frontend/src/lib/date-formatter.ts (CREATE NEW)
+
+================================================================================
+5. TYPE DEFINITIONS & DATA FETCHING
+================================================================================
+
+A. Update Source Interface: frontend/src/types/database.ts
+
+   CURRENT (lines 15-24):
+   export interface Source {
+     id: string;
+     url: string;
+     domain: string;
+     first_seen_at: string;
+     last_seen_at: string;
+     summary_short: string | null;
+     created_at: string;
+     updated_at: string;
+   }
+
+   ADD THESE FIELDS:
+   export interface Source {
+     // ... existing fields ...
+     published_at?: string | null;      // ISO timestamp
+     publish_date_raw?: string | null;  // Raw API value
+   }
+
+B. Update Supabase Query: frontend/src/lib/db/supabase-service.ts
+
+   CURRENT (lines 93-112): Selects from sources but excludes date fields
+   
+   CHANGE: Add to .select() call:
+     published_at,
+     publish_date_raw,
+
+   Location: getTopicPageData() method, around line 103
+
+Files to Modify:
+  - /Users/mariahollweck/Projects/blogging/frontend/src/types/database.ts
+  - /Users/mariahollweck/Projects/blogging/frontend/src/lib/db/supabase-service.ts
+
+================================================================================
+6. IMPLEMENTATION ROADMAP
+================================================================================
+
+PHASE 1: QUICK IMPLEMENTATION (uses first_seen_at as proxy)
+  - No database schema changes
+  - No crawler changes
+  - Only frontend changes
+  - Shows "Published X days ago" based on when we first discovered article
+  
+  Changes:
+    1. Create date-formatter.ts utility
+    2. Update ArticleCard component
+    3. Update ArticleCard.module.css
+    4. Update Source interface (add optional published_at)
+    5. Update Supabase query to fetch first_seen_at
+
+PHASE 2: TRUE PUBLISH DATES (if needed later)
+  - Add published_at column to sources table
+  - Update crawler to parse Serper API date field (if available)
+  - OR implement HTML scraping to extract metadata
+  - Update database with actual publish dates
+  - Backfill historical data
+
+================================================================================
+7. ALTERNATIVE APPROACHES
+================================================================================
+
+Option A: USE NEWS API (if switching from organic results)
+  - Serper API has separate news endpoint
+  - Includes reliable date field
+  - May change result quality/relevance
+  
+Option B: HTML SCRAPING (for true publish dates)
+  - Fetch article HTML after crawling
+  - Parse metadata:
+    * og:publish_time
+    * article:published_time
+    * schema.org datePublished
+  - Adds latency and resource usage
+  - Higher reliability for publish dates
+  
+Option C: HYBRID (RECOMMENDED for future)
+  - Use Serper API date if available
+  - Fallback to HTML parsing if needed
+  - Cache results to minimize repeated fetches
+
+================================================================================
+8. TESTING CHECKLIST
+================================================================================
+
+Unit Tests:
+  [ ] formatPublishDate() handles all date formats
+  [ ] formatPublishDate() returns null for invalid input
+  [ ] formatPublishDate() calculates days correctly across timezones
+
+Integration Tests:
+  [ ] ArticleCard displays date when available
+  [ ] ArticleCard doesn't display when date is null
+  [ ] Date formatting matches design specs
+  [ ] Mobile layout accommodates date display
+  [ ] Database query includes new fields
+  
+Manual Testing:
+  [ ] Verify date displays on all article cards
+  [ ] Test relative dates ("2 days ago")
+  [ ] Test absolute dates ("Dec 15, 2024")
+  [ ] Test missing dates (graceful fallback)
+  [ ] Test on mobile/tablet/desktop
+
+================================================================================
+9. FILES INVOLVED - COMPLETE LIST
+================================================================================
+
+TO MODIFY:
+  1. frontend/src/components/cards/ArticleCard.tsx (display logic)
+  2. frontend/src/components/cards/ArticleCard.module.css (styling)
+  3. frontend/src/types/database.ts (Source interface)
+  4. frontend/src/lib/db/supabase-service.ts (query fields)
+  5. workers/crawler/src/index.ts (if implementing phase 2)
+  6. database/schema.sql (if implementing phase 2)
+
+TO CREATE:
+  1. frontend/src/lib/date-formatter.ts (NEW utility)
+
+TO REVIEW:
+  1. frontend/src/lib/db/mock-service.ts (mock data handling)
+
+================================================================================
+10. ESTIMATED EFFORT
+================================================================================
+
+Phase 1 (Quick - Using first_seen_at): 2-3 hours
+  - Create date-formatter utility: 30 min
+  - Update ArticleCard: 30 min
+  - Update types and queries: 30 min
+  - Testing and refinement: 1 hour
+
+Phase 2 (Full - True publish dates): 4-6 hours
+  - Database migration: 30 min
+  - Crawler updates: 1.5 hours
+  - Testing: 1.5 hours
+  - HTML parsing (if needed): 1-2 hours
+
+================================================================================

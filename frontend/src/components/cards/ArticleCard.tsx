@@ -1,6 +1,7 @@
 // Article card for topic pages
 
 import { ArticleWithSource } from '@/types/database';
+import { formatRelativeDate } from '@/lib/date-utils';
 import styles from './ArticleCard.module.css';
 
 interface ArticleCardProps {
@@ -9,17 +10,17 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article }: ArticleCardProps) {
   const displayText = article.source.summary_short || article.snippet || '';
+  const publishedDate = formatRelativeDate(article.source.published_at);
 
   return (
     <a
       href={article.source.url}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener noreferrer nofollow"
       className={styles.card}
     >
       <div className={styles.header}>
         <span className={styles.rank}>{article.position}</span>
-        <div className={styles.favicon}></div>
         <span className={styles.domain}>{article.source.domain}</span>
       </div>
 
@@ -29,7 +30,15 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
       <div className={styles.footer}>
         <span className={styles.meta}>
-          {article.source.domain}
+          {publishedDate ? (
+            <>
+              <span className={styles.publishDate}>{publishedDate}</span>
+              <span className={styles.separator}>•</span>
+              <span>{article.source.domain}</span>
+            </>
+          ) : (
+            <span>{article.source.domain}</span>
+          )}
         </span>
         <button className={styles.openBtn}>Open original →</button>
       </div>

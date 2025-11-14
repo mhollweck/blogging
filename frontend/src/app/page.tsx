@@ -1,7 +1,7 @@
 // Homepage
 
 import { db } from '@/lib/db';
-import { TopicCard } from '@/components/cards/TopicCard';
+import { InfiniteTopicList } from '@/components/topics/InfiniteTopicList';
 import styles from './page.module.css';
 
 export const revalidate = 3600; // Revalidate every hour
@@ -27,11 +27,13 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className={styles.container}>
-        <div className={styles.grid}>
-          {topics.map((topic) => (
-            <TopicCard key={topic.slug} topic={topic} />
-          ))}
-        </div>
+        {topics.length === 0 ? (
+          <div className={styles.emptyState}>
+            <p>No topics available yet. Check back soon!</p>
+          </div>
+        ) : (
+          <InfiniteTopicList initialTopics={topics} pageSize={9} />
+        )}
       </div>
     </>
   );
